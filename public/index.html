@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luma Auto Register</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            min-height: 200px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-box {
+            background: #f8fafc;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .status-box.running {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .status-box.error {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-label {
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .status-value {
+            color: #1e293b;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .results-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .example-json {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        .helper-text {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Luma Auto Register</h1>
+            <p>Automated Luma.ai Event Registration with Turnstile Solver</p>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 20px;">Event Configuration</h2>
+
+            <div class="form-group">
+                <label for="eventUrl">Event URL</label>
+                <input type="text" id="eventUrl" placeholder="https://lu.ma/your-event">
+                <p class="helper-text">The full Luma event URL</p>
+            </div>
+
+            <div class="form-group">
+                <label for="eventApiId">Event API ID</label>
+                <input type="text" id="eventApiId" placeholder="evt-xxxxxxxxxxxxx">
+                <p class="helper-text">Find this in browser DevTools > Network tab when viewing the event</p>
+            </div>
+
+            <div class="form-group">
+                <label for="turnstileKey">Turnstile Key (Optional)</label>
+                <input type="text" id="turnstileKey" placeholder="0x4AAAAAAAWvh8EjxFMqgICc">
+                <p class="helper-text">Leave empty to use default from .env</p>
+            </div>
+
+            <div class="form-group">
+                <label for="emails">Emails (JSON Array)</label>
+                <textarea id="emails" placeholder='[{"first_name":"John","last_name":"Doe","email":"john@example.com"}]'></textarea>
+                <p class="helper-text">JSON array of objects with first_name, last_name, and email</p>
+                <div class="example-json">[
+  {"first_name": "John", "last_name": "Doe", "email": "john1@example.com"},
+  {"first_name": "Jane", "last_name": "Doe", "email": "jane1@example.com"}
+]</div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-primary" id="startBtn" onclick="startRegistration()">
+                    Start Registration
+                </button>
+                <button class="btn btn-danger" id="stopBtn" onclick="stopRegistration()" style="display: none;">
+                    Stop Registration
+                </button>
+            </div>
+        </div>
+
+        <div class="card" id="statusCard" style="display: none;">
+            <h2 style="margin-bottom: 20px;">Status</h2>
+            <div class="status-box" id="statusBox">
+                <div class="status-item">
+                    <span class="status-label">Status:</span>
+                    <span class="status-value" id="statusText">Idle</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Progress:</span>
+                    <span class="status-value" id="progressText">0 / 0</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Started At:</span>
+                    <span class="status-value" id="startedAt">-</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="resultsCard" style="display: none;">
+            <h2 style="margin-bottom: 20px;">Results</h2>
+            <div id="resultsContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let statusInterval;
+
+        function startRegistration() {
+            const eventUrl = document.getElementById('eventUrl').value;
+            const eventApiId = document.getElementById('eventApiId').value;
+            const turnstileKey = document.getElementById('turnstileKey').value;
+            const emailsText = document.getElementById('emails').value;
+
+            if (!eventUrl || !eventApiId || !emailsText) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            let emails;
+            try {
+                emails = JSON.parse(emailsText);
+                if (!Array.isArray(emails)) {
+                    throw new Error('Must be an array');
+                }
+            } catch (error) {
+                alert('Invalid JSON format for emails');
+                return;
+            }
+
+            const data = {
+                eventUrl,
+                eventApiId,
+                emails,
+                turnstileKey: turnstileKey || undefined
+            };
+
+            fetch('/api/register/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    document.getElementById('startBtn').style.display = 'none';
+                    document.getElementById('stopBtn').style.display = 'block';
+                    document.getElementById('statusCard').style.display = 'block';
+
+                    statusInterval = setInterval(updateStatus, 2000);
+                } else {
+                    alert('Error: ' + (result.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                alert('Network error: ' + error.message);
+            });
+        }
+
+        function stopRegistration() {
+            fetch('/api/register/stop', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    clearInterval(statusInterval);
+                    document.getElementById('startBtn').style.display = 'block';
+                    document.getElementById('stopBtn').style.display = 'none';
+                }
+            });
+        }
+
+        function updateStatus() {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(status => {
+                    const statusBox = document.getElementById('statusBox');
+
+                    if (status.isRunning) {
+                        statusBox.className = 'status-box running';
+                        document.getElementById('statusText').textContent = 'Running...';
+                    } else {
+                        statusBox.className = 'status-box';
+                        document.getElementById('statusText').textContent = status.completedAt ? 'Completed' : 'Idle';
+
+                        if (status.completedAt) {
+                            clearInterval(statusInterval);
+                            document.getElementById('startBtn').style.display = 'block';
+                            document.getElementById('stopBtn').style.display = 'none';
+                            loadResults();
+                        }
+                    }
+
+                    const progress = status.totalEmails > 0
+                        ? Math.round((status.results.length / status.totalEmails) * 100)
+                        : 0;
+
+                    document.getElementById('progressText').textContent =
+                        `${status.results.length} / ${status.totalEmails}`;
+                    document.getElementById('progressFill').style.width = progress + '%';
+                    document.getElementById('startedAt').textContent =
+                        status.startedAt ? new Date(status.startedAt).toLocaleString() : '-';
+                });
+        }
+
+        function loadResults() {
+            fetch('/api/results')
+                .then(response => response.json())
+                .then(results => {
+                    if (results.length === 0) return;
+
+                    document.getElementById('resultsCard').style.display = 'block';
+
+                    const successCount = results.filter(r => r.success).length;
+                    const failedCount = results.filter(r => !r.success).length;
+
+                    let html = `
+                        <div style="margin-bottom: 20px;">
+                            <span class="badge badge-success">Success: ${successCount}</span>
+                            <span class="badge badge-error">Failed: ${failedCount}</span>
+                        </div>
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>Email</th>
+                                    <th>Status</th>
+                                    <th>Message</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                    results.forEach(result => {
+                        const statusBadge = result.success
+                            ? '<span class="badge badge-success">Success</span>'
+                            : '<span class="badge badge-error">Failed</span>';
+
+                        const message = result.alreadyRegistered
+                            ? 'Already registered'
+                            : result.error || '-';
+
+                        const time = result.timestamp
+                            ? new Date(result.timestamp).toLocaleTimeString()
+                            : '-';
+
+                        html += `
+                            <tr>
+                                <td>${result.email}</td>
+                                <td>${statusBadge}</td>
+                                <td>${message}</td>
+                                <td>${time}</td>
+                            </tr>
+                        `;
+                    });
+
+                    html += '</tbody></table>';
+                    document.getElementById('resultsContent').innerHTML = html;
+                });
+        }
+
+        fetch('/api/config')
+            .then(response => response.json())
+            .then(config => {
+                if (config.defaultTurnstileKey) {
+                    document.getElementById('turnstileKey').placeholder =
+                        `Default: ${config.defaultTurnstileKey}`;
+                }
+            });
+    </script>
+</body>
+</html>
